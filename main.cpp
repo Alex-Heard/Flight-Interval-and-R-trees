@@ -14,24 +14,27 @@
 using namespace std;
 
 //readFile function in order to read from the csv files
-void readIntervalFile(const string &_file, fstream &file){
-    //Variables
+void readIntervalFile(const string &_file, ifstream &file){
+    file.open(_file);
     string line;
-    string lineNum;
-    file.open(_file, ios::in);
-    if(file.is_open()){
-        getline(file, lineNum);
-        //read pixels
-        for(int i = 0; i < (width*height); i++) {
-            file.read(reinterpret_cast<char *>(&pixel_char_data), 1);
-            temp_pixel.setBlue(pixel_char_data);
-            file.read(reinterpret_cast<char *>(&pixel_char_data), 1);
-            temp_pixel.setGreen(pixel_char_data);
-            file.read(reinterpret_cast<char *>(&pixel_char_data), 1);
-            temp_pixel.setRed(pixel_char_data);
-            _image.addImageData(temp_pixel);
-        }
-        file.close();
+    Node *root = nullptr;
+    if(!file.is_open()) {
+        cout << "File is not open." << endl;
+        exit(1);
+    }
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string unixTime, flightNumber, elapsed;
+
+        getline(ss, unixTime, ',');
+        getline(ss, flightNumber, ',');
+        getline(ss, elapsed, ',');
+
+        int UT = stoi(unixTime);
+        int elapsedTime = stoi(elapsed);
+        pair<int, int> interval = {UT, UT + elapsedTime};
+
+        root = itree.insert(root, interval, flightNumber);
     }
 }
 
@@ -72,7 +75,8 @@ int main() {
                     if(option == 2){
                         try{
                             rtree.loadFromCSV("100000.csv");
-                            itree.loadFromCSV("100000.csv");
+                            ifstream file;
+                            readIntervalFile("100000.csv",file);
                         }
                         catch (const exception& g) {
                             cerr << "Error loading CSV File: " << g.what() << endl;
@@ -84,19 +88,37 @@ int main() {
             else if (option == 2) {
                 cout << fixed;
                 cout.precision(2);
-                cout << "R-tree: \nTIme Complexity: " << rtree.time() << "Space Complexity: " << sizeof(rtree) << endl;
+                cout << "R-tree: \nTime Complexity: " << rtree.time() << "Space Complexity: " << sizeof(rtree) << endl;
                 cout << "Interval-tree: \nTIme Complexity: " << itree.time() << "Space Complexity: " << sizeof(itree) << endl;
             }
             else if (option == 3) {
-
+                string flightNumber;
+                string start;
+                double startD;
+                int startI;
+                string duration;
+                double durationD;
+                int durationI;
+                pair<int, int> interval;
+                //root = itree.insert(root, interval, flightNumber);
+                cout << "Flight Number: ";
+                cin >> flightNumber;
+                cout << "Start: ";
+                cin >> start;
+                startD = stod(start);
+                startI = stoi(start);
+                cout << "Duration: ";
+                cin >> duration;
+                durationD = stod(duration);
+                durationI = stoi(duration);
+                interval = make_pair(startI, startI + durationI);
+                rtree.insert(flightNumber, startD, durationD);
+                itree.insert(root, interval, flightNumber);
             }
             else if (option == 4) {
 
             }
             else if (option == 5) {
-
-            }
-            else if (option == 6) {
                 start = false;
             }
             else{
