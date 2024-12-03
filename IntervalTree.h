@@ -9,23 +9,20 @@
 #include <chrono>
 using namespace std;
 class IntervalTree {
-public:
+private:
     struct Node {
         pair<int, int> interval;
         string flightNumber;
         int max;
         Node *left, *right;
         int height = 1; //ensures height starts correctly
-        //vector<pair<int, int>> storageOfIntervals;
 
         Node(pair<int, int> interval, const string& flightNumber)
                 : interval(interval), flightNumber(flightNumber), max(interval.second),
                   left(nullptr), right(nullptr), height(1) {}
     };
-
     Node* root;
 
-private:
     //tracks height of different nodes
     int Height(Node *node) {
         if (node != nullptr) {
@@ -117,10 +114,19 @@ private:
         return root;
     }
 
-    void search() {
-        //complete this
-    }
+    //taking search from mod 4 lecture BST Search and Insert
+    void searchFlightNumber(Node* node, string flightNumber, vector<pair<int,int>> intervals) {
+        if(node == nullptr) {
+            return;
+        }
+        //goes through left side of tree
+        if(node->flightNumber == flightNumber) {
+            intervals.push_back(node->interval);
+        }
 
+        searchFlightNumber(node->left, flightNumber, intervals);
+        searchFlightNumber(node->right, flightNumber, intervals);
+    }
 //from geeksforgeeks interval tree implementation
     bool doOverlap(pair<int, int> interval1, pair<int, int> interval2) {
         return (interval1.first <= interval2.second && interval2.first <= interval1.second);
@@ -188,20 +194,28 @@ public:
     }
 
     vector<pair<int, int>> searchOverlaps(pair<int, int> comparisonInterval) {
-        vector<Node*> overlaps;
+        vector<Node *> overlaps;
         overlapSearch(root, comparisonInterval, overlaps);
 
         vector<pair<int, int>> results;
-        for (Node* node : overlaps) {
+        for (Node *node: overlaps) {
             results.push_back(node->interval);
         }
         return results;
     }
 
-//    void searchOverlaps(pair<int, int> query, vector<Node *> &overlaps) {
-//        overlapSearch(root, query, overlaps);
-//    }
-
+    vector<pair<int,int>> searchFlight(const string& flightNumber) {
+        vector<pair<int,int>> intervals;
+        searchFlightNumber(root, flightNumber, intervals);
+        if(intervals.empty()) {
+            cout << "Flight " << flightNumber << " not found." << endl;
+        }
+        else {
+            cout << "Flight found: " << endl;
+            cout << "Interval [" << root->interval.first << ", " << root->interval.second << "] (Flight: " << root->flightNumber << ")" << endl;
+        }
+        return intervals;
+    }
     int getMax() {
         return root->max;
     }
