@@ -12,7 +12,7 @@ class IntervalTree {
 private:
     struct Node {
         pair<int, int> interval;
-        string flightNumber = "";
+        string flightNumber;
         int max;
         Node *left, *right;
         int height = 1; //ensures height starts correctly
@@ -87,25 +87,25 @@ private:
         int treesBalance = getBalance(root);
 
         //left left rotation
-        if (treesBalance > 1 && interval.first < root->left->interval.first) {
-            return rightRotation(root);
-        }
-        //right right rotation
-        if (treesBalance < -1 && interval.first > root->right->interval.first) {
-            return leftRotation(root);
-        }
-        //right left rotation
-        if (treesBalance < -1 && interval.first < root->right->interval.first) {
-            root->right = rightRotation(root->right);
-            return leftRotation(root);
-        }
-        //left right rotation
-        if (treesBalance > 1 && interval.first > root->left->interval.first) {
-            root->left = leftRotation(root->left);
-            return rightRotation(root);
-        }
-        //update of the height
-        root->height = 1 + max(Height(root->left), Height(root->right));
+//        if (treesBalance > 1 && interval.first < root->left->interval.first) {
+//            return rightRotation(root);
+//        }
+//        //right right rotation
+//        if (treesBalance < -1 && interval.first > root->right->interval.first) {
+//            return leftRotation(root);
+//        }
+//        //right left rotation
+//        if (treesBalance < -1 && interval.first < root->right->interval.first) {
+//            root->right = rightRotation(root->right);
+//            return leftRotation(root);
+//        }
+//        //left right rotation
+//        if (treesBalance > 1 && interval.first > root->left->interval.first) {
+//            root->left = leftRotation(root->left);
+//            return rightRotation(root);
+//        }
+//        //update of the height
+//        root->height = 1 + max(Height(root->left), Height(root->right));
 
         return root;
     }
