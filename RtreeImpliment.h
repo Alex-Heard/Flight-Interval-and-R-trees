@@ -53,12 +53,14 @@ private:
     void recalculateMBR(const shared_ptr<Node>& node);
     shared_ptr<Node> splitNode(shared_ptr<Node>& node);  // Split a node when it exceeds maximum entries when building tree
     shared_ptr<Node> insertHelper(shared_ptr<Node>& node, const FlightInterval& interval);
-    void searchHelper(const shared_ptr<Node>& node, double queryTime, vector<FlightInterval>& results) const;
+    void searchFlightNumberHelper(const shared_ptr<Node>& node, const string& flightNumber, vector<FlightInterval>& results) const;
     void traverseHelper(const shared_ptr<Node>& node, int depth = 0) const;
+    size_t calculateSpaceHelper(const shared_ptr<Node>& node);
 public:
     FlightRTree() : root(make_shared<Node>()) {}
     void insert(const string& flightNumber, double start, double duration); // Insert flight interval into  tree (used const to fix and prevent some unattended modifications)
     void loadFromCSV(const string& filename);  // Read from  file, insert in R-tree
-    vector<FlightInterval> search(double queryTime) const;// Search for flights that contain a specific time point (from a vector of diffrent times)
+    vector<FlightInterval> searchByFlightNumber(const string& flightNumber) const;// Search for flights numberst return a time (from a vector of diffrent flights)
     void traverse() const; // Traverse and print the tree structure
+    void calculateSpace();
 };

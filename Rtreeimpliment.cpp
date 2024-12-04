@@ -152,31 +152,25 @@ void FlightRTree::recalculateMBR(const shared_ptr<Node>& node) {
 }
 
 // Search for flights that contain a specific time point
-vector<FlightInterval> FlightRTree::search(double queryTime) const {
+vector<FlightInterval> FlightRTree::searchByFlightNumber(const string& flightNumber) const {
     vector<FlightInterval> results;
-    if (queryTime >= root->minbonding_start && queryTime <= root->minbonding_end) {
-        searchHelper(root, queryTime, results);
-    } else {
-        cout << "none found";
-    }
+    searchFlightNumberHelper(root, flightNumber, results);
     return results;
 }
 
 // Recursive search helper for the R tree
-void FlightRTree::searchHelper(const shared_ptr<Node>& node, double queryTime, vector<FlightInterval>& results) const {
+void FlightRTree::searchFlightNumberHelper(const shared_ptr<Node>& node, const string& flightNumber, vector<FlightInterval>& results) const {
     if (node->isLeaf) {
         for (size_t i = 0; i < node->entries.size(); ++i) {
             FlightInterval entry = node->entries[i];
-            if (entry.start <= queryTime && queryTime <= entry.getTotalTime()) {
+            if (entry.flightNumb == flightNumber) {
                 results.push_back(entry);
             }
         }
     } else {
         for (size_t i = 0; i < node->children.size(); ++i) {
             shared_ptr<Node> child = node->children[i];
-            if (child->minbonding_start <= queryTime && queryTime <= child->minbonding_end) {
-                searchHelper(child, queryTime, results);
-            }
+            searchFlightNumberHelper(child, flightNumber, results);
         }
     }
 }
@@ -225,5 +219,32 @@ void FlightRTree::loadFromCSV(const string& filename) {
         double duration = stod(durationStr);
         insert(flightNumberStr, unixTime, duration);
     }
+}
+
+size_t FlightRTree::calculateSpaceHelper(const shared_ptr<Node>& node) {
+    size_t nodeSize = sizeof(*node);
+    if (node == nullptr) {
+        nodeSize = 0;
+    }
+    if (node->isLeaf) {
+        nodeSize += node->entries.size() * sizeof(FlightInterval);
+        for (const auto& entry : node->entries) {
+            nodeSize += entry.flightNumb.capacity();
+        }
+    }
+    else {
+        nodeSize += node->children.size() * sizeof(shared_ptr<Node>);
+        for (const auto& child : node->children) {
+            nodeSize += calculateSpaceHelper(child);
+        }
+    }
+    //cout << nodeSize << " Size" << endl;
+    return nodeSize;
+}
+
+void FlightRTree::calculateSpace(){
+    int size;
+    size += calculateSpaceHelper(root);
+    cout << size << " Total Space Complexity" << endl;
 }
 
