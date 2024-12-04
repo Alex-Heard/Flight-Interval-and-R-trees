@@ -12,7 +12,7 @@ class IntervalTree {
 private:
     struct Node {
         pair<int, int> interval;
-        string flightNumber;
+        string flightNumber = "";
         int max;
         Node *left, *right;
         int height = 1; //ensures height starts correctly
@@ -110,22 +110,22 @@ private:
         return root;
     }
     //taking search from mod 4 lecture BST Search and Insert
-    void searchFlightNumber(Node* node, const string &flightNumber, pair<int,int> interval) {
+    void searchFlightNumber(Node* node, const string &flightNumber, vector<pair<int,int>> &intervals) {
         //if tree is empty there cannot be any findable flight number
-        interval.first = -1;
-        interval.second = -1;
         if(node == nullptr) {
             return;
         }
-        //store the interval of the found flight
-        if(node->flightNumber == flightNumber) {
-            interval.first = node->interval.first;
-            interval.second = node->interval.second;
+        else {
+            //store the interval of the found flight
+            string flight = node->flightNumber;
+            if (flight == flightNumber) {
+                intervals.push_back(node->interval);
+            }
+            //goes through left side of tree
+            searchFlightNumber(node->left, flightNumber, intervals);
+            //goes through right side of tree
+            searchFlightNumber(node->right, flightNumber, intervals);
         }
-        //goes through left side of tree
-        searchFlightNumber(node->left, flightNumber, interval);
-        //goes through right side of tree
-        searchFlightNumber(node->right, flightNumber, interval);
     }
 //from geeksforgeeks interval tree implementation
     bool doOverlap(pair<int, int> interval1, pair<int, int> interval2) {
@@ -208,17 +208,17 @@ public:
         return results;
     }
     //outputs a flight info if found
-    pair<int,int> searchFlight(const string& flightNumber) {
-        pair<int,int> interval;
-        searchFlightNumber(root, flightNumber, interval);
-        if(interval.first == -1 && interval.second == -1) {
-            cout << "Flight " << flightNumber << " not found." << endl;
-        }
-        else {
+    vector<pair<int,int>> searchFlight(const string& flightNumber) {
+        vector<pair<int,int>> intervals;
+        searchFlightNumber(root, flightNumber, intervals);
+        if (!intervals.empty()) {
             cout << "Flight found: " << endl;
             cout << "Interval [" << root->interval.first << ", " << root->interval.second << "] (Flight: " << root->flightNumber << ")" << endl;
         }
-        return interval;
+        else {
+            cout << "Flight " << flightNumber << " not found." << endl;
+        }
+        return intervals;
     }
     //gets the max value
     int getMax() {
