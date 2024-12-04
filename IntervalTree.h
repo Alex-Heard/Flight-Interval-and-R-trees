@@ -24,7 +24,7 @@ private:
     //creates interval tree root
     Node* root;
     //tracks height of different nodes
-    int Height(Node *node) {
+    int height(Node *node) {
         if (node != nullptr) {
             return node->height;
         } else {
@@ -34,7 +34,7 @@ private:
     //get the balance of a node for rebalancing purposes later
     int getBalance(Node *node) {
         if (node != nullptr) {
-            return Height(node->left) - Height(node->right);
+            return height(node->left) - height(node->right);
         } else {
             return 0;
         }
@@ -47,8 +47,8 @@ private:
         newParent->left = node;
         node->right = temp;
 
-        node->height = max(Height(node->left), Height(node->right)) + 1;
-        newParent->height = max(Height(newParent->left), Height(newParent->right)) + 1;
+        node->height = max(height(node->left), height(node->right)) + 1;
+        newParent->height = max(height(newParent->left), height(newParent->right)) + 1;
 
         newParent->max = max(newParent->interval.second, max(newParent->left->max, newParent->right->max));
 
@@ -62,8 +62,8 @@ private:
         newParent->right = node;
         node->left = temp;
 
-        node->height = max(Height(node->left), Height(node->right)) + 1;
-        newParent->height = max(Height(newParent->left), Height(newParent->right)) + 1;
+        node->height = max(height(node->left), height(node->right)) + 1;
+        newParent->height = max(height(newParent->left), height(newParent->right)) + 1;
 
         return newParent;
     }
@@ -87,25 +87,25 @@ private:
         int treesBalance = getBalance(root);
 
         //left left rotation
-//        if (treesBalance > 1 && interval.first < root->left->interval.first) {
-//            return rightRotation(root);
-//        }
-//        //right right rotation
-//        if (treesBalance < -1 && interval.first > root->right->interval.first) {
-//            return leftRotation(root);
-//        }
-//        //right left rotation
-//        if (treesBalance < -1 && interval.first < root->right->interval.first) {
-//            root->right = rightRotation(root->right);
-//            return leftRotation(root);
-//        }
-//        //left right rotation
-//        if (treesBalance > 1 && interval.first > root->left->interval.first) {
-//            root->left = leftRotation(root->left);
-//            return rightRotation(root);
-//        }
-//        //update of the height
-//        root->height = 1 + max(Height(root->left), Height(root->right));
+        if (treesBalance > 1 && interval.first < root->left->interval.first) {
+            return rightRotation(root);
+        }
+        //right right rotation
+        if (treesBalance < -1 && interval.first > root->right->interval.first) {
+            return leftRotation(root);
+        }
+        //right left rotation
+        if (treesBalance < -1 && interval.first < root->right->interval.first) {
+            root->right = rightRotation(root->right);
+            return leftRotation(root);
+        }
+        //left right rotation
+        if (treesBalance > 1 && interval.first > root->left->interval.first) {
+            root->left = leftRotation(root->left);
+            return rightRotation(root);
+        }
+        //update of the height
+        root->height = 1 + max(height(root->left), height(root->right));
 
         return root;
     }
@@ -237,9 +237,9 @@ public:
             }
         }
     }
-//    void display() {
-//        inorder(root);
-//    }
+    void display() {
+        inorder(root);
+    }
 
     size_t calculateSpace() {
         return calculateSpace(root);
