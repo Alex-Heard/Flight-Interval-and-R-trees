@@ -202,6 +202,7 @@ void FlightRTree::traverseHelper(const shared_ptr<Node>& node, int depth) const 
 
 
 void FlightRTree::loadFromCSV(const string& filename) {
+    //cout << "Loading rTree" << endl;
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "Could not open file " << filename << endl;
@@ -245,5 +246,5 @@ size_t FlightRTree::calculateSpaceHelper(const shared_ptr<Node>& node) {
 void FlightRTree::calculateSpace(){
     int size = 0;
     size += calculateSpaceHelper(root);
-    cout << size << " Total Space Complexity" << endl;
+    cout << size << " Bytes" << endl;
 }

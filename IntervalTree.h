@@ -68,23 +68,23 @@ private:
         return newParent;
     }
 //insert nodes into the interval tree
-    Node *insert(Node *root, pair<int, int> interval, const string &flightNumber) {
+    Node *insertHelper(Node *_root, pair<int, int> interval, const string &flightNumber) {
         //creates root if not already existing
-        if (root == nullptr) {
+        if (_root == nullptr) {
             return new Node(interval, flightNumber);
         }
         //get the low of the root node to be able to compare for proper sorting for future node insertions
-        int lowVal = root->interval.first;
+        int lowVal = _root->interval.first;
         //sorting of node insertions
         if (interval.first < lowVal) {
-            root->left = insert(root->left, interval, flightNumber);
+            _root->left = insertHelper(_root->left, interval, flightNumber);
         } else if (interval.first > lowVal) {
-            root->right = insert(root->right, interval, flightNumber);
+            _root->right = insertHelper(_root->right, interval, flightNumber);
         }
         //updates the max value
-        root->max = max(root->max, interval.second);
+        _root->max = max(_root->max, interval.second);
 
-        int treesBalance = getBalance(root);
+        int treesBalance = getBalance(_root);
 
         //left left rotation
         if (treesBalance > 1 && interval.first < root->left->interval.first) {
@@ -107,7 +107,7 @@ private:
         //update of the height
         root->height = 1 + max(height(root->left), height(root->right));
 
-        return root;
+        return _root;
     }
     //taking search from mod 4 lecture BST Search and Insert
     void searchFlightNumber(Node* node, const string &flightNumber, vector<pair<int,int>> &intervals) {
@@ -194,7 +194,7 @@ public:
     }
     //insert method
     void insert(pair<int, int> interval, const string& flightNumber) {
-        root = insert(root, interval, flightNumber);
+        root = insertHelper(root, interval, flightNumber);
     }
     //output a vector of all overlapping intervals
     vector<pair<int, int>> searchOverlaps(pair<int, int> comparisonInterval) {
@@ -212,8 +212,8 @@ public:
         vector<pair<int,int>> intervals;
         searchFlightNumber(root, flightNumber, intervals);
         if (!intervals.empty()) {
-            cout << "Flight found: " << endl;
-            cout << "Interval [" << root->interval.first << ", " << root->interval.second << "] (Flight: " << root->flightNumber << ")" << endl;
+            //cout << "Flight found: " << endl;
+            //cout << "Interval [" << root->interval.first << ", " << root->interval.second << "] (Flight: " << root->flightNumber << ")" << endl;
         }
         else {
             cout << "Flight " << flightNumber << " not found." << endl;
@@ -223,6 +223,9 @@ public:
     //gets the max value
     int getMax() {
         return root->max;
+    }
+    void getRoot(){
+        cout << "Start: " << root->interval.first << "End: " << root->interval.second << endl;
     }
     //gets the flight number
     string getFlightNumber(const pair<int, int>& interval) {
