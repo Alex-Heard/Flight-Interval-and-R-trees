@@ -172,12 +172,12 @@ private:
     }
 
 //destructor to clear potential memory leaks
-    void destroyTree(Node *root) {
+    void destructor(Node *root) {
         if (root == nullptr) {
             return;
         }
-        destroyTree(root->left);
-        destroyTree(root->right);
+        destructor(root->left);
+        destructor(root->right);
         delete root;
     }
 public:
@@ -186,7 +186,7 @@ public:
     }
 
     ~IntervalTree() {
-        destroyTree(root);
+        destructor(root);
     }
 
     void insert(pair<int, int> interval, const string& flightNumber) {
